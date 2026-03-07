@@ -1,0 +1,80 @@
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { User } from './schema/user.schema';
+import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
+import { MESSAGES } from '../common/constants/messages.constants';
+
+@Injectable()
+export class UsersService {
+
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    private jwtService: JwtService
+  ) {}
+
+  async createUser(data:any) {
+
+    try {
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(data.password, salt);
+
+    data.password = hashedPassword;
+
+      const user = await this.userModel.create(data);
+
+      return {
+        message: MESSAGES.USER_CREATED,
+        data: user
+      }
+
+    } catch(error){
+
+      throw new Error(error.message)
+
+    }
+
+  }
+
+  async login(data:any){
+
+  try{
+
+    const user = await this.userModel.findOne({ email: data.email });
+
+    if(!user){
+      throw new Error("User not found");
+    }
+
+    const isMatch = await bcrypt.compare(data.password, user.password);
+
+    if(!isMatch){
+      throw new Error("Invalid password");
+    }
+
+    const token = this.jwtService.sign({
+          id: user._id,
+          email: user.email,
+          role: user.role
+    });
+
+    return {
+      message: MESSAGES.LOGIN_SUCCESS,
+      token: token
+    }
+
+  }catch(error){
+    throw new Error(error.message)
+  }
+
+}
+
+async getUsersByRole(role: string) {
+  return await this.userModel.find({ role: role });
+}
+
+}
+
+
