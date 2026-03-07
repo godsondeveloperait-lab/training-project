@@ -7,13 +7,16 @@ import { JwtService } from '@nestjs/jwt';
 import { MESSAGES } from '../common/constants/messages.constants';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
+import { InjectQueue } from '@nestjs/bull';
+import type { Queue } from 'bull';
 
 @Injectable()
 export class UsersService {
 
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    @InjectQueue('email-queue') private emailQueue: Queue
   ) {}
 
   async createUser(data: CreateUserDto) {
@@ -26,6 +29,10 @@ export class UsersService {
     data.password = hashedPassword;
 
       const user = await this.userModel.create(data);
+
+      await this.emailQueue.add('send-welcome-email', {
+        email: user.email
+      });
 
       return {
         message: MESSAGES.USER_CREATED,

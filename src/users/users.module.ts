@@ -6,6 +6,7 @@ import { User, UserSchema } from './schema/user.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from 'src/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [
@@ -17,6 +18,9 @@ import { ConfigModule } from '@nestjs/config';
       signOptions: { expiresIn: "1d" }
     }),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    BullModule.registerQueue({
+      name: 'email-queue',
+    }),
     AuthModule
   ],
   controllers: [UsersController],

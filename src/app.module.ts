@@ -10,6 +10,7 @@ import { MailService } from './mail/mail.service';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CronService } from './cron/cron.service';
 import { MailModule } from './mail/mail.module';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [
@@ -22,6 +23,12 @@ import { MailModule } from './mail/mail.module';
     ProductsModule,
     MailModule,
     ScheduleModule.forRoot(),
+    BullModule.forRoot({
+      redis: {
+        host: '127.0.0.1',
+        port: 6379,
+      },
+    }),
   ],
   controllers: [AppController],
   providers: [AppService, MailService, CronService],
