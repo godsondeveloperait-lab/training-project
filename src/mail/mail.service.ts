@@ -18,14 +18,15 @@ export class MailService {
 
   }
 
-  async sendMail(to: string, message: string) {
+async sendMail(to: string, message: string, attachments?: any[]) {
 
-    await this.transporter.sendMail({
-      from: process.env.MAIL_USER,
-      to,
-      subject: 'Buy Product Reminder',
-      text: message
-    });
+  await this.transporter.sendMail({
+    from: process.env.MAIL_USER,
+    to: to,
+    subject: 'Buy Product Reminder',
+    text: message,
+    attachments: attachments
+  });
 
   }
 }

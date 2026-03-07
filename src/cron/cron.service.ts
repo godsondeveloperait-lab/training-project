@@ -11,8 +11,8 @@ export class CronService {
     private mailService: MailService
   ) {}
 
-  @Cron('0 0 22 * * *')
-// @Cron('0 */1 * * * *') 
+  // @Cron('0 0 22 * * *')
+@Cron('0 */1 * * * *') 
   async handleCron() {
 
     console.log('Running nightly email job');
@@ -23,7 +23,13 @@ export class CronService {
 
       await this.mailService.sendMail(
         user.email,
-        'Hello! Don’t forget to check our products and buy something today.'
+        'Hello! Don’t forget to check our products and buy something today.',
+        [
+      {
+        filename: 'welcome.pdf',
+        path: './files/Get_Started_With_Smallpdf.pdf'
+      }
+    ]
       );
 
     }
