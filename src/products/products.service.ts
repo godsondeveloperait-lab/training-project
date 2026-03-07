@@ -3,6 +3,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Product } from './schema/product.schema';
 import { Model } from 'mongoose';
 import { MESSAGES } from 'src/common/constants/messages.constants';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
+import { FilterProductDto } from './dto/filter-product.dto';
 
 @Injectable()
 export class ProductsService {
@@ -10,7 +13,7 @@ export class ProductsService {
     @InjectModel(Product.name) private productModel: Model<Product>
   ) {}
 
-  async createProduct(data: any) {
+  async createProduct(data: CreateProductDto) {
     try {
 
       const product = await this.productModel.create(data);
@@ -59,7 +62,7 @@ async getProductById(id: string){
 
 }
 
-async updateProduct(id: string, data: any) {
+async updateProduct(id: string, data: UpdateProductDto) {
 
   try {
 
@@ -96,7 +99,7 @@ async deleteProduct(id: string) {
 
 }
 
-async filterProducts(query: any) {
+async filterProducts(query: FilterProductDto) {
 
   try {
 

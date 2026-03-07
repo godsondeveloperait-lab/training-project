@@ -4,6 +4,9 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from 'src/auth/roles.guard';
+import { CreateProductDto } from './dto/create-product.dto';
+import { FilterProductDto } from './dto/filter-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -24,7 +27,7 @@ export class ProductsController {
        }),
     )
     createProduct(
-    @Body() body: any,
+    @Body() body: CreateProductDto,
     @UploadedFiles() files: Array<Express.Multer.File>
     ) {
 
@@ -43,7 +46,7 @@ export class ProductsController {
     }
 
     @Get("filter")
-        filterProducts(@Query() query: any){
+        filterProducts(@Query() query: FilterProductDto){
         return this.productsService.filterProducts(query);
     }
 
@@ -67,7 +70,7 @@ export class ProductsController {
 )
 updateProduct(
   @Param("id") id: string,
-  @Body() body: any,
+  @Body() body: UpdateProductDto,
   @UploadedFiles() files: Array<Express.Multer.File>,
 ) {
   if (files && files.length > 0) {
@@ -78,7 +81,7 @@ updateProduct(
   return this.productsService.updateProduct(id, body);
 }
     
-
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Delete(":id")
         deleteProduct(@Param("id") id: string) {
         return this.productsService.deleteProduct(id);

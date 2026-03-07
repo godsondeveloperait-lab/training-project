@@ -11,8 +11,8 @@ export class CronService {
     private mailService: MailService
   ) {}
 
-//   @Cron('0 0 22 * * *')
-@Cron('0 */1 * * * *') 
+  @Cron('0 0 22 * * *')
+// @Cron('0 */1 * * * *') 
   async handleCron() {
 
     console.log('Running nightly email job');
