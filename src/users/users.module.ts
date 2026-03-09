@@ -11,20 +11,20 @@ import { BullModule } from '@nestjs/bull';
 @Module({
   imports: [
     ConfigModule.forRoot({
-          isGlobal: true
-        }),
-     JwtModule.register({
+      isGlobal: true,
+    }),
+    JwtModule.register({
       secret: process.env.JWT_SECRET!,
-      signOptions: { expiresIn: "1d" }
+      signOptions: { expiresIn: '1d' },
     }),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     BullModule.registerQueue({
       name: 'email-queue',
     }),
-    AuthModule
+    AuthModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],
-  exports: [UsersService]
+  exports: [UsersService],
 })
 export class UsersModule {}

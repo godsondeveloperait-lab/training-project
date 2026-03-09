@@ -12,7 +12,7 @@ async function bootstrap() {
     description: 'laptop product',
     price: 100,
     stock: 10,
-    images: ['image1.jpg', 'image2.jpg']
+    images: ['image1.jpg', 'image2.jpg'],
   });
 
   console.log('Seed completed');

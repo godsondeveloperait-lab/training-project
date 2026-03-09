@@ -4,24 +4,17 @@ import { MailService } from '../mail/mail.service';
 
 @Processor('email-queue')
 export class EmailProcessor {
-
   constructor(private mailService: MailService) {}
 
   @Process('send-welcome-email')
-async handleWelcomeEmail(job: Job) {
+  async handleWelcomeEmail(job: Job) {
+    const { email } = job.data;
 
-  const { email } = job.data;
-
-  await this.mailService.sendMail(
-    email,
-    'Welcome to our platform!',
-    [
+    await this.mailService.sendMail(email, 'Welcome to our platform!', [
       {
         filename: 'welcome.pdf',
-        path: './files/dummy-pdf_2.pdf'
-      }
-    ]
-  );
-
+        path: './files/dummy-pdf_2.pdf',
+      },
+    ]);
   }
 }

@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  UploadedFiles,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -10,82 +22,77 @@ import { UpdateProductDto } from './dto/update-product.dto';
 
 @Controller('products')
 export class ProductsController {
-
   constructor(private readonly productsService: ProductsService) {}
-    
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Post()
-    @UseInterceptors(
-    FilesInterceptor("images", 5, {
-      storage: diskStorage({
-        destination: "./uploads",
-        filename: (req, file, cb) => {
-          const filename = Date.now() + "-" + file.originalname;
-          cb(null, filename);
-          },
-         }),
-       }),
-    )
-    createProduct(
-    @Body() body: CreateProductDto,
-    @UploadedFiles() files: Array<Express.Multer.File>
-    ) {
 
-    const images = files.map(file => file.filename);
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Post()
+  @UseInterceptors(
+    FilesInterceptor('images', 5, {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, cb) => {
+          const filename = Date.now() + '-' + file.originalname;
+          cb(null, filename);
+        },
+      }),
+    }),
+  )
+  createProduct(
+    @Body() body: CreateProductDto,
+    @UploadedFiles() files: Array<Express.Multer.File>,
+  ) {
+    const images = files.map((file) => file.filename);
 
     return this.productsService.createProduct({
       ...body,
-      images
+      images,
     });
-
   }
 
-    @Get()
-        getProducts(){
-        return this.productsService.getProducts();
-    }
+  @Get()
+  getProducts() {
+    return this.productsService.getProducts();
+  }
 
-    @Get("filter")
-        filterProducts(@Query() query: FilterProductDto){
-        return this.productsService.filterProducts(query);
-    }
+  @Get('filter')
+  filterProducts(@Query() query: FilterProductDto) {
+    return this.productsService.filterProducts(query);
+  }
 
-    @Get(":id")
-        getProduct(@Param("id") id: string){
-        return this.productsService.getProductById(id);
-    }
+  @Get(':id')
+  getProduct(@Param('id') id: string) {
+    return this.productsService.getProductById(id);
+  }
 
-@UseGuards(AuthGuard('jwt'), RolesGuard)
-@Put(":id")
-@UseInterceptors(
-  FilesInterceptor("images", 5, {
-    storage: diskStorage({
-      destination: "./uploads",
-      filename: (req, file, cb) => {
-        const filename = Date.now() + "-" + file.originalname;
-        cb(null, filename);
-      },
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Put(':id')
+  @UseInterceptors(
+    FilesInterceptor('images', 5, {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, cb) => {
+          const filename = Date.now() + '-' + file.originalname;
+          cb(null, filename);
+        },
+      }),
     }),
-  }),
-)
-updateProduct(
-  @Param("id") id: string,
-  @Body() body: UpdateProductDto,
-  @UploadedFiles() files: Array<Express.Multer.File>,
-) {
-  if (files && files.length > 0) {
-    const images = files.map((file) => file.filename);
-    body.images = images;
-  }
-
-  return this.productsService.updateProduct(id, body);
-}
-    
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Delete(":id")
-        deleteProduct(@Param("id") id: string) {
-        return this.productsService.deleteProduct(id);
+  )
+  updateProduct(
+    @Param('id') id: string,
+    @Body() body: UpdateProductDto,
+    @UploadedFiles() files: Array<Express.Multer.File>,
+  ) {
+    if (files && files.length > 0) {
+      const images = files.map((file) => file.filename);
+      body.images = images;
     }
 
-}
+    return this.productsService.updateProduct(id, body);
+  }
 
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Delete(':id')
+  deleteProduct(@Param('id') id: string) {
+    return this.productsService.deleteProduct(id);
+  }
+}

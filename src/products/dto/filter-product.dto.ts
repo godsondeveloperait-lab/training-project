@@ -2,7 +2,6 @@ import { IsOptional, IsString, IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class FilterProductDto {
-
   @IsOptional()
   @IsString()
   name?: string;
@@ -17,5 +16,4 @@ export class FilterProductDto {
 
   @IsOptional()
   createdAt?: string;
-
 }

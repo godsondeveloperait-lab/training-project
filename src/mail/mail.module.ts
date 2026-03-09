@@ -6,14 +6,14 @@ import { EmailProcessor } from '../queue/email.processor';
 
 @Module({
   imports: [
-     ConfigModule.forRoot({
-          isGlobal: true
-        }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     BullModule.registerQueue({
       name: 'email-queue',
     }),
   ],
   providers: [MailService, EmailProcessor],
-  exports: [MailService]
+  exports: [MailService],
 })
 export class MailModule {}

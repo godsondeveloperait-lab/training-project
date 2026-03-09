@@ -12,78 +12,64 @@ import type { Queue } from 'bull';
 
 @Injectable()
 export class UsersService {
-
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     private jwtService: JwtService,
-    @InjectQueue('email-queue') private emailQueue: Queue
+    @InjectQueue('email-queue') private emailQueue: Queue,
   ) {}
 
   async createUser(data: CreateUserDto) {
-
     try {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(data.password, salt);
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(data.password, salt);
-
-    data.password = hashedPassword;
+      data.password = hashedPassword;
 
       const user = await this.userModel.create(data);
 
       await this.emailQueue.add('send-welcome-email', {
-        email: user.email
+        email: user.email,
       });
 
       return {
         message: MESSAGES.USER_CREATED,
-        data: user
+        data: user,
+      };
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async login(data: LoginUserDto) {
+    try {
+      const user = await this.userModel.findOne({ email: data.email });
+
+      if (!user) {
+        throw new Error('User not found');
       }
 
-    } catch(error){
+      const isMatch = await bcrypt.compare(data.password, user.password);
 
-      throw new Error(error.message)
+      if (!isMatch) {
+        throw new Error('Invalid password');
+      }
 
+      const token = this.jwtService.sign({
+        id: user._id,
+        email: user.email,
+        role: user.role,
+      });
+
+      return {
+        message: MESSAGES.LOGIN_SUCCESS,
+        token: token,
+      };
+    } catch (error) {
+      throw new Error(error.message);
     }
-
   }
 
-  async login(data: LoginUserDto){
-
-  try{
-
-    const user = await this.userModel.findOne({ email: data.email });
-
-    if(!user){
-      throw new Error("User not found");
-    }
-
-    const isMatch = await bcrypt.compare(data.password, user.password);
-
-    if(!isMatch){
-      throw new Error("Invalid password");
-    }
-
-    const token = this.jwtService.sign({
-          id: user._id,
-          email: user.email,
-          role: user.role
-    });
-
-    return {
-      message: MESSAGES.LOGIN_SUCCESS,
-      token: token
-    }
-
-  }catch(error){
-    throw new Error(error.message)
+  async getUsersByRole(role: string) {
+    return await this.userModel.find({ role: role });
   }
-
 }
-
-async getUsersByRole(role: string) {
-  return await this.userModel.find({ role: role });
-}
-
-}
-
-

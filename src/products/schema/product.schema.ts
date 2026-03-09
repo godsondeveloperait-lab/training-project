@@ -5,7 +5,6 @@ export type ProductDocument = Product & Document;
 
 @Schema({ timestamps: true })
 export class Product {
-
   @Prop({ required: true })
   name: string;
 
@@ -20,7 +19,6 @@ export class Product {
 
   @Prop([String])
   images: string[];
-
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);
