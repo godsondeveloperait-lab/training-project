@@ -16,7 +16,6 @@ import { BullModule } from '@nestjs/bull';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: [`src/.env`, `src/.env.${process.env.NODE_ENV}`],
     }),
     MongooseModule.forRoot(process.env.MONGO_URI!),
     UsersModule,
