@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './schema/user.schema';
@@ -35,8 +35,11 @@ export class UsersService {
         message: MESSAGES.USER_CREATED,
         data: user,
       };
-    } catch (error) {
-      throw new Error(error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new InternalServerErrorException(error.message);
+      }
+      throw new InternalServerErrorException('Server Error');
     }
   }
 
@@ -64,8 +67,11 @@ export class UsersService {
         message: MESSAGES.LOGIN_SUCCESS,
         token: token,
       };
-    } catch (error) {
-      throw new Error(error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new InternalServerErrorException(error.message);
+      }
+      throw new InternalServerErrorException('Server Error');
     }
   }
 

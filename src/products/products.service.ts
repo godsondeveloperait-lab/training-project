@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Product } from './schema/product.schema';
+import { Product, ProductDocument } from './schema/product.schema';
 import { Model } from 'mongoose';
 import { MESSAGES } from 'src/common/constants/messages.constants';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -10,7 +10,7 @@ import { FilterProductDto } from './dto/filter-product.dto';
 @Injectable()
 export class ProductsService {
   constructor(
-    @InjectModel(Product.name) private productModel: Model<Product>,
+    @InjectModel(Product.name) private productModel: Model<ProductDocument>,
   ) {}
 
   async createProduct(data: CreateProductDto) {
@@ -21,8 +21,11 @@ export class ProductsService {
         message: MESSAGES.PRODUCT_CREATED,
         data: product,
       };
-    } catch (error) {
-      throw new Error(error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new InternalServerErrorException(error.message);
+      }
+      throw new InternalServerErrorException('Server Error');
     }
   }
 
@@ -34,8 +37,11 @@ export class ProductsService {
         message: MESSAGES.PRODUCT_FETCHED,
         data: products,
       };
-    } catch (error) {
-      throw new Error(error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new InternalServerErrorException(error.message);
+      }
+      throw new InternalServerErrorException('Server Error');
     }
   }
 
@@ -47,8 +53,11 @@ export class ProductsService {
         message: MESSAGES.PRODUCT_FETCHED,
         data: product,
       };
-    } catch (error) {
-      throw new Error(error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new InternalServerErrorException(error.message);
+      }
+      throw new InternalServerErrorException('Server Error');
     }
   }
 
@@ -62,8 +71,11 @@ export class ProductsService {
         message: MESSAGES.PRODUCT_UPDATED,
         data: product,
       };
-    } catch (error) {
-      throw new Error(error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new InternalServerErrorException(error.message);
+      }
+      throw new InternalServerErrorException('Server Error');
     }
   }
 
@@ -74,14 +86,17 @@ export class ProductsService {
       return {
         message: MESSAGES.PRODUCT_DELETED,
       };
-    } catch (error) {
-      throw new Error(error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new InternalServerErrorException(error.message);
+      }
+      throw new InternalServerErrorException('Server Error');
     }
   }
 
   async filterProducts(query: FilterProductDto) {
     try {
-      const filter: any = {};
+      const filter: Record<string, any> = {};
 
       if (query.name) {
         filter.name = { $regex: query.name, $options: 'i' };
@@ -105,8 +120,11 @@ export class ProductsService {
         message: 'Filtered products',
         data: products,
       };
-    } catch (error) {
-      throw new Error(error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new InternalServerErrorException(error.message);
+      }
+      throw new InternalServerErrorException('Server Error');
     }
   }
 }
