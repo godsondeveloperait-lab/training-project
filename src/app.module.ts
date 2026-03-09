@@ -16,6 +16,7 @@ import { BullModule } from '@nestjs/bull';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: [`src/.env`, `src/.env.${process.env.NODE_ENV}`],
     }),
     MongooseModule.forRoot(process.env.MONGO_URI!),
     UsersModule,
@@ -25,8 +26,8 @@ import { BullModule } from '@nestjs/bull';
     ScheduleModule.forRoot(),
     BullModule.forRoot({
       redis: {
-        host: '127.0.0.1',
-        port: 6379,
+        host: process.env.REDIS_HOST || 'localhost',
+        port: parseInt(process.env.REDIS_PORT || '6379'),
       },
     }),
   ],
